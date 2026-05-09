@@ -34,6 +34,20 @@ Open a terminal, move into your work folder, and run:
 npx skills install marimo-team/marimo-pair
 ```
 
+### Optional: Reuse This Repo's `AGENTS.md`
+
+If you want the same notebook-focused agent guidance used in this repo, run this command inside your own project folder:
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/ericmjl/2026-pydata-boston-cursor-hackathon/main/AGENTS.md" -o AGENTS.md
+```
+
+If you want to avoid overwriting an existing `AGENTS.md`, use:
+
+```bash
+[ -e AGENTS.md ] || curl -fsSL "https://raw.githubusercontent.com/ericmjl/2026-pydata-boston-cursor-hackathon/main/AGENTS.md" -o AGENTS.md
+```
+
 ### Step 3: Start the Marimo Notebook Server
 
 In the same folder, run:
