@@ -74,3 +74,53 @@ You are set up correctly when:
 - A new Markdown cell appears in the notebook containing `Hello!`.
 
 At that point, you are ready to build during the hackathon.
+
+## Hackathon Project Idea
+
+Build a Marimo notebook that does something cool with a dataset:
+
+- use `marimo-pair` to collaborate with Cursor Agent in a running notebook,
+- use Marimo notebook cells to explore, model, and visualize the data, and
+- present one clear "wow" insight, prediction, simulation, or interactive analysis.
+
+Deliverable: one polished notebook that demonstrates a meaningful data science workflow and a compelling result.
+
+## Suggested Datasets by Category
+
+Use this menu as inspiration. Each category has two candidate datasets.
+Participants are also welcome to use their own dataset.
+
+### Protein Engineering
+
+- [FLIP2: Expanding Protein Fitness Landscape Benchmarks](https://flip.protein.properties/)
+- [ProteinGym](https://proteingym.org/)
+
+### Genomics
+
+- [1000 Genomes Project](https://www.internationalgenome.org/data)
+- [GTEx Datasets](https://gtexportal.org/home/datasets)
+
+### Climate
+
+- [ERA5 Reanalysis (Copernicus)](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels)
+- [NOAA Climate Data Online Datasets](https://www.ncei.noaa.gov/cdo-web/datasets)
+
+### Robotics
+
+- [LeRobot Datasets (Hugging Face)](https://huggingface.co/lerobot)
+- [UCI Wall-Following Robot Navigation](https://archive.ics.uci.edu/dataset/86/wall+following+robot+navigation+data)
+
+### Marketing
+
+- [UCI Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing)
+- [Kaggle Marketing Campaign Datasets](https://www.kaggle.com/search?q=marketing+campaign+dataset)
+
+### Retail
+
+- [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail)
+- [Retailrocket E-commerce Dataset (Kaggle)](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset)
+
+### Civic/Government
+
+- [Analyze Boston (City of Boston Open Data)](https://data.boston.gov/)
+- [MBTA Open Data](https://www.mbta.com/developers)
