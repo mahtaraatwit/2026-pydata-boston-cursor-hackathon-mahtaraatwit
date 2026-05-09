@@ -60,10 +60,10 @@ Send this prompt to your Cursor agent:
 Using the marimo-pair skill, connect to my running marimo notebook at http://localhost:2718
 ```
 
-Then ask the agent to create a new Markdown cell that says:
+Then paste this exact prompt into your Cursor agent:
 
 ```text
-Hello!
+Using the marimo-pair skill, create a new Markdown cell in my connected marimo notebook that contains exactly: Hello!
 ```
 
 ## Success Check
