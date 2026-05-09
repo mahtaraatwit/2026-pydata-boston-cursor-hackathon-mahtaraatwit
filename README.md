@@ -9,8 +9,8 @@ This guide helps you get your machine ready and confirms that Cursor can connect
 Please make sure you have the following:
 
 - `uv` installed on your computer (installation guide: [Astral uv installation](https://docs.astral.sh/uv/getting-started/installation/)).
-- `npm` available on your computer (installation guide: [Node.js and npm installation](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)).
-- Cursor downloaded from the [Cursor website](https://www.cursor.com/).
+- `npm` available on your computer (installation guide: [Node.js download page](https://nodejs.org/en/download/)).
+- Cursor downloaded from the [Cursor download page](https://cursor.com/download).
 - A Cursor account created (**do not purchase a paid plan yet**).
 - A working internet connection.
 
