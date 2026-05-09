@@ -138,3 +138,9 @@ Participants are also welcome to use their own dataset.
 
 - [Analyze Boston (City of Boston Open Data)](https://data.boston.gov/)
 - [MBTA Open Data](https://www.mbta.com/developers)
+
+## Join the Community
+
+Stay connected with the local community by joining **PyData Boston-Cambridge** on Meetup:
+
+- [PyData Boston-Cambridge Meetup](https://www.meetup.com/pydata-boston-cambridge/)

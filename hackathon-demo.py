@@ -34,7 +34,9 @@ def intro_markdown(mo):
     mo.md(r"""
     # Protein Engineering Demo
 
-    We'll start by loading the Novartis iRED assay tables with Polars.
+    This notebook is a complete assay-to-structure workflow for enzyme engineering.
+    We start from tabular mutational assay data, identify signal in sequence space,
+    and then project those effects onto a 3D protein structure for interactive exploration.
     """)
     return
 
@@ -44,9 +46,11 @@ def data_loading_markdown(mo):
     mo.md(r"""
     ## Load assay tables
 
-    We load the two supplementary assay tables separately:
-    - `cs1c02786_si_002.csv` for **conversion**
-    - `cs1c02786_si_003.csv` for **chirality** (`r_enantiomeric_excess`)
+    We use two assay views of the same engineering problem:
+    - `cs1c02786_si_002.csv`: conversion activity (`mean`)
+    - `cs1c02786_si_003.csv`: chiral selectivity (`r_enantiomeric_excess`)
+
+    Keeping these tables separate helps us reason about multi-objective tradeoffs.
     """)
     return
 
@@ -82,10 +86,8 @@ def correlation_analysis_markdown(mo):
     mo.md(r"""
     ## Correlation between conversion and chirality
 
-    We compare the overlap of mutants present in both assay tables.
-    This section includes:
-    - a direct scatterplot of `mean` vs `r_enantiomeric_excess`
-    - ECDF curves for both value columns
+    First, we quantify whether improved conversion tends to co-occur with improved selectivity.
+    We restrict to mutants present in both tables, then compare their joint behavior.
     """)
     return
 
@@ -192,12 +194,15 @@ def single_point_heatmap_markdown(mo):
     mo.md(r"""
     ## Single-point mutant landscape
 
-    We filter to single-point mutations (no `;`) and visualize activity as a heatmap:
-    - x-axis: mutation position
+    To make residue-level interpretation easier, we focus on canonical single substitutions
+    (mutations matching `WT + position + MUT`, no `;`).
+
+    This heatmap shows:
+    - x-axis: sequence position
     - y-axis: mutated amino-acid letter
     - color: conversion `mean`
 
-    Hover includes the exact mutation string and `r_enantiomeric_excess` when available.
+    Hover also reports chirality when available.
     """)
     return
 
@@ -305,7 +310,10 @@ def average_effect_by_position_markdown(mo):
     mo.md(r"""
     ## Average mutational effect by position
 
-    We average conversion `mean` across single-point mutations at each sequence position.
+    Here we collapse amino-acid identity and ask a simpler question:
+    *on average, how sensitive is each position to mutation?*
+
+    This gives a position-level prioritization signal before moving to structure.
     """)
     return
 
@@ -411,6 +419,18 @@ def build_position_effect_tables(df_chirality, df_single_point, pl):
         df_position_effect_conversion,
         df_position_effect_conversion_max,
     )
+
+
+@app.cell(hide_code=True)
+def structure_mapping_markdown(mo):
+    mo.md(r"""
+    ## Sequence-to-structure mapping
+
+    Before coloring the structure, we validate that assay residue numbering aligns with PDB residue numbering.
+    We infer the best residue offset by matching wild-type letters, then build residue-level effect maps
+    indexed by PDB residue number.
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -585,6 +605,18 @@ def pdb_sequence_validation_and_effect_maps(
         pdb_residue_offset,
         pdb_text,
     )
+
+
+@app.cell(hide_code=True)
+def widget_engineering_markdown(mo):
+    mo.md(r"""
+    ## Interactive viewer component
+
+    The viewer is an inline anywidget backed by 3Dmol.js.
+    It consumes precomputed residue effect maps and renders synchronized ribbon/surface coloring,
+    while keeping ligand/cofactor visible as ball-and-stick.
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -874,10 +906,18 @@ def structure_viewer_markdown(mo):
     mo.md(r"""
     ## Interactive structure coloring
 
-    Use the controls in the next cell, then the structure loads below.
-    - **Color mode:** conversion or chirality
-    - **Mutational effect summary:** average (`mean`) or maximum (`max`)
-    - Colormap: conversion (blue -> white -> red), chirality (purple -> white -> orange)
+    Use the controls in the next cell, then inspect the structure below.
+
+    - **Color mode:**
+      - `conversion` maps activity-like signal
+      - `chirality` maps enantiomeric-excess signal
+    - **Mutational effect summary:**
+      - `mean` highlights average behavior across substitutions
+      - `max` highlights best-case opportunities at each position
+
+    Colormaps:
+    - conversion: blue -> white -> red
+    - chirality: purple -> white -> orange
 
     Unmeasured residues remain neutral gray.
     """)
@@ -993,6 +1033,17 @@ def protein_structure_viewer_show(
 def structure_viewer_interpretation_note(mo):
     mo.md(r"""
     **Reading the map:** Hotter colors mark positions where the *average* mutational effect is higher in the selected assay. Cooler colors mark lower averages. Residues without measurements stay neutral gray.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def viewer_validation_markdown(mo):
+    mo.md(r"""
+    ## Visualization consistency check
+
+    We close by validating that selected tooltip values match the aggregated Polars tables.
+    This confirms the structural colors and annotations are faithful to the underlying data.
     """)
     return
 
