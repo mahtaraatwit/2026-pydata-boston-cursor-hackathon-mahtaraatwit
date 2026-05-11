@@ -1,362 +1,212 @@
-# Protein Engineering Demo: Live Recreation Prompts
+# Protein engineering demo: golden path
 
-This document is a rewrite of the original golden path script, optimized for **live
-recreation** of the `hackathon-demo.py` notebook from scratch in front of an audience.
+`hackathon-demo.py` — runbook for a ~20 minute demo. **Main section:** prompts you can paste into an agent chat verbatim. Below that: cell order, UI checklist, and recovery notes.
 
-Each numbered section below is a copy/paste-ready prompt for the Cursor agent. With
-`AGENTS.md` and the `marimo-pair` skill in scope, the agent already knows to create
-or edit cells in the live marimo kernel (not the `.py` file) and to handle imports
-per cell — so the prompts focus on what each cell should *do*, not on the mechanics.
-
-Markdown cells are not prompted for individually. Narrate them by hand, or ask the
-agent to add a leading markdown cell yourself (the prompts here focus on the code
-cells that have to be right for downstream cells to work).
-
-## Demo Goal
-
-Show an end-to-end agentic protein engineering workflow:
-
-- Load conversion and chirality datasets.
-- Identify mutational signal patterns at the sequence level.
-- Map those effects onto structure `7OG3`.
-- Interactively explore mode (`conversion`/`chirality`) and summary (`mean`/`max`).
-- Inspect residue-level values with click tooltips.
-
-## Pre-Demo Setup (2 minutes)
-
-- Open an **empty** marimo notebook to recreate from scratch:
-  - `uvx marimo edit --sandbox --no-token hackathon-demo.py`
-  - If the file already exists with content, save the existing one aside first
-    (e.g. `mv hackathon-demo.py hackathon-demo.reference.py`) so the live demo
-    starts blank.
-- Confirm data files exist (the prompts will read them):
-  - `data/ired-novartis/cs1c02786_si_002.csv`
-  - `data/ired-novartis/cs1c02786_si_003.csv`
-  - `data/ired-novartis/7OG3.pdb`
-- Make sure Cursor is connected to the running marimo notebook via the
-  `marimo-pair` skill so cells go into the live kernel.
-- Toggle code visibility off in marimo for a clean presentation view.
-
-## How to use the prompts
-
-For each section:
-
-1. (Optional) Add a markdown cell yourself with the section's narration / framing.
-2. Copy the entire fenced prompt block under "Prompt" into Cursor.
-3. Let the agent create the cell in the live notebook and run it.
-4. Verify the expected output, then narrate using the talk track.
+Distilled from [cursor-chat-f20cbaac.md](cursor-chat-f20cbaac.md).
 
 ---
 
-## 1. Load the conversion assay table
+## Pre-demo setup
 
-**Why**: Brings in the conversion (`mean`) values keyed by `mutation`.
+Start the notebook:
 
-**Prompt**:
-
-```text
-Load `data/ired-novartis/cs1c02786_si_002.csv` into a polars DataFrame called
-`df_conversion` and display it. The columns of interest are `mutation` (string)
-and `mean` (float, the conversion metric).
+```bash
+uvx marimo edit --sandbox --no-token hackathon-demo.py
 ```
 
+Confirm files exist:
+
+- `data/ired-novartis/cs1c02786_si_002.csv`
+- `data/ired-novartis/cs1c02786_si_003.csv`
+- `data/ired-novartis/7OG3.pdb`
+
+Code cells are hidden for presentation; run cells top-to-bottom when showing the finished app live.
+
 ---
 
-## 2. Load the chirality assay table
+## Copy-paste prompts (in order)
 
-**Why**: Brings in enantiomeric excess values keyed by `mutation`.
+Use the following as standalone messages to an assistant. Each block is meant to be copied as a whole (triple-click inside the fence).
 
-**Prompt**:
+---
 
-```text
-Load `data/ired-novartis/cs1c02786_si_003.csv` into `df_chirality` and display it.
-Relevant columns are `mutation` (string) and `r_enantiomeric_excess` (float).
+### Prompt 1 — Marimo pair programming
+
+```
+Read the marimo-pair skill in this repo and connect to the marimo notebook running on port <PORT>. Verify you can execute code via marimo code mode (smoke test like 1+1 and opening marimo._code_mode context).
 ```
 
+Replace `<PORT>` with your server port (for example `2719`).
+
+**Finished notebook:** no agent step — optional aside that live edits should go through marimo code mode.
+
 ---
 
-## 3. Build the intersection dataset
+### Prompt 2 — Data in repo
 
-**Why**: Restricts to mutants present in both tables for a fair comparison.
-
-**Prompt**:
-
-```text
-Build `df_intersection` from `df_chirality.select(["mutation", "r_enantiomeric_excess"])`
-inner-joined with `df_conversion.select(["mutation", "mean"])` on `mutation`. Drop
-rows null in any of those three columns, deduplicate on `mutation`, sort by
-`mutation`, and add a `mutation_index` row-index column. Display the table.
+```
+We're doing a protein engineering notebook. Start from the Novartis IRED data under data/ired-novartis on GitHub (same layout as ericmjl/odsc-2026-agentic-data-science tree data/ired-novartis). Make sure this repo has the supplementary CSVs we need: cs1c02786_si_002.csv (conversion) and cs1c02786_si_003.csv (chirality), plus whatever else is required for the demo, under data/ired-novartis/.
 ```
 
+**Finished notebook:** run `data_loading_markdown`, `load_conversion_table`, `chirality_loading_markdown`, `load_chirality_table`.
+
 ---
 
-## 4. Conversion vs chirality scatter
+### Prompt 3 — Load and inspect with Polars
 
-**Why**: Visualizes whether the two objectives co-vary.
-
-**Prompt**:
-
-```text
-Plot `df_intersection["mean"]` (x, conversion) against
-`df_intersection["r_enantiomeric_excess"]` (y, chirality) as a Plotly scatter:
-markers only, size 8, opacity 0.75, with the `mutation` string as per-point hover
-text. The hovertemplate should show `mutation`, `mean` (4 decimals), and
-`r_enantiomeric_excess` (4 decimals), with `<extra></extra>` to hide the trace
-box. Title "Intersection mutants: conversion vs chirality"; axis titles
-"mean (conversion)" and "r_enantiomeric_excess (chirality)".
+```
+In the live marimo session: add named markdown + code cells that load the conversion and chirality supplementary CSVs with Polars into df_conversion and df_chirality, display each table, and explain in markdown which file is which (002 conversion / 003 chirality with r_enantiomeric_excess).
 ```
 
+**Finished notebook:** cells through `load_chirality_table`.
+
 ---
 
-## 5. ECDFs for both metrics
+### Prompt 4 — Correlation at mutant intersection
 
-**Why**: Distribution shape side by side, no binning artifacts.
-
-**Prompt**:
-
-```text
-Plot ECDFs of `df_intersection["mean"]` and `df_intersection["r_enantiomeric_excess"]`
-as two step-line traces on a single Plotly figure (use `line=dict(shape="hv")`).
-Define a small local helper that returns `(sorted_values, [(i + 1) / n for i in range(n)])`.
-Name the traces "mean (conversion)" and "r_enantiomeric_excess (chirality)". Title
-"ECDFs for conversion and chirality values"; axes "Value" and "ECDF".
+```
+I want to see whether conversion and chirality relate. On the intersection of mutants (join on mutation), prepare a dataset with mutation, mean from df_conversion, and r_enantiomeric_excess from df_chirality. Plot a Plotly scatter of mean vs r_enantiomeric_excess for intersecting mutants, and Plotly ECDFs of both value columns. Skip a full pair plot if it doesn’t add much — scatter + ECDFs are enough.
 ```
 
+**Finished notebook:** `correlation_analysis_markdown` → `prepare_intersection_dataset` → `plotly_intersection_scatter` → `scatter_interpretation_note` → `plotly_value_ecdfs`.
+
 ---
 
-## 6. Single-point mutant heatmap
+### Prompt 5 — Interpret scatter
 
-**Why**: Reveals position × amino-acid hotspots in conversion, with chirality on hover.
-Also produces `df_single_point`, reused by later prompts.
-
-**Prompt**:
-
-```text
-Filter `df_conversion` to canonical single substitutions matching `^[A-Z]\d+[A-Z]$`
-(non-null `mutation`, no `;`), then add `position` (Int64) and `mut_aa` (string)
-columns extracted from the regex capture groups; call the result `df_single_point`.
-Left-join `df_chirality.select(["mutation", "r_enantiomeric_excess"])` on `mutation`,
-group by `["position", "mut_aa"]`, and aggregate conversion mean (alias `mean`), an
-example mutation (`first`, alias `example_mutation`), chirality mean, and `pl.len()`
-as `n_records`. Plot as a Plotly heatmap with sorted positions on x, sorted mut_aa
-letters on y, the aggregated mean as z (missing cells stay `None`), Viridis colorscale,
-colorbar title "mean", per-cell text formatted as
-`"mutation={example}<br>r_enantiomeric_excess={value or NA}<br>n_records={n}"`, and
-hovertemplate
-`"position=%{x}<br>mutation_letter=%{y}<br>mean=%{z:.4f}<br>%{text}<extra></extra>"`.
-Title "Single-point mutants: conversion heatmap".
+```
+Add a short markdown cell right after the intersection scatter that states clearly that I don’t see a strong correlation between r_enantiomeric_excess and mean in that scatter.
 ```
 
+**Finished notebook:** ensure `scatter_interpretation_note` has been run.
+
 ---
 
-## 7. Average mutational effect by position
+### Prompt 6 — Single-point heatmap
 
-**Why**: Collapses amino-acid identity to a single per-position sensitivity signal.
+```
+Filter df_conversion to single-point mutants only: mutation must not contain ";", and should match canonical WTposMUT single-letter pattern. Parse position and mutated amino-acid letter. Build a Plotly heatmap: x = position, y = mutation letter, color = mean. Join chirality where available. Hover should show the exact mutation string and r_enantiomeric_excess when present.
 
-**Prompt**:
-
-```text
-From `df_single_point`, build `df_position_effect` by grouping on `position`,
-aggregating `pl.col("mean").mean().alias("average_mutational_effect")`, sorted by
-`position`. Plot as a Plotly lines+markers Scatter (marker size 5, line width 2)
-with hovertemplate
-`"position=%{x}<br>average_mutational_effect=%{y:.4f}<extra></extra>"`. Title
-"Average mutational effect by position"; axes "Position" and "Average mutational
-effect".
+Below the heatmap, add markdown noting that I see hotspot positions with potentially strong beneficial mutational effects.
 ```
 
+**Finished notebook:** `single_point_heatmap_markdown` → `plot_single_point_heatmap` → `single_point_heatmap_interpretation_note`.
+
 ---
 
-## 8. Mean and max position-effect tables
+### Prompt 7 — Average effect by position
 
-**Why**: Four per-position summary tables (mean/max × conversion/chirality) feed the
-structure viewer.
-
-**Prompt**:
-
-```text
-Apply the same single-point filter (canonical `^[A-Z]\d+[A-Z]$`, no `;`, non-null) to
-`df_chirality` to produce `df_single_point_chirality` with a `position` (Int64) column.
-Then build four per-position summary tables, each sorted by `position`:
-`df_position_effect_conversion` (mean of `mean`, aliased `avg_conversion`) and
-`df_position_effect_conversion_max` (max, aliased `max_conversion`) from
-`df_single_point`; `df_position_effect_chirality` (mean `r_enantiomeric_excess`,
-aliased `avg_chirality`) and `df_position_effect_chirality_max` (max, aliased
-`max_chirality`) from `df_single_point_chirality`. Concatenate the `position`
-columns of all four, take unique sorted positions, and left-join the four tables
-onto that spine in order conv-mean, conv-max, chir-mean, chir-max to build a
-combined `df_position_effects`; display it.
+```
+Average mutational effect by integer position: line plot x = position, y = average mutational effect (from the single-point conversion data). Keep named cells and markdown context.
 ```
 
+**Finished notebook:** `average_effect_by_position_markdown` → `plot_average_effect_by_position`.
+
 ---
 
-## 9. PDB parse and residue offset
+### Prompt 8 — Positional tables + PDB mapping
 
-**Why**: Aligns assay numbering to PDB residue numbering and validates WT letters.
+```
+From single-point data, build per-position average effects for conversion and for chirality (from chirality single-point rows). Then map assay positions to PDB 7OG3 chain A: parse the PDB, find the best residue index offset by matching wild-type letters, report match/mismatch/unmapped counts, and export JSON maps keyed by PDB residue number for conversion and chirality effects (later extended to mean and max per mode if needed).
 
-**Prompt**:
-
-```text
-Read `data/ired-novartis/7OG3.pdb` into `pdb_text` and parse chain "A" residues into
-a `dict[int, str]` mapping `resseq` → 1-letter amino-acid code. Use the standard 20-AA
-3-letter to 1-letter mapping plus `MSE -> M`; iterate `ATOM`/`HETATM` lines using
-columns 0–6 for record, 17–20 for resname, 21 for chain, 22–26 for resseq. Derive the
-wild-type letter per assay `position` by slicing the first character of the first
-mutation in each group of `df_single_point`. Search offsets in `range(-20, 21)` for
-the value that maximizes wild-type letter agreement, and bind it as
-`pdb_residue_offset`. Build `df_pdb_mapping_validation` with columns `assay_position`,
-`pdb_residue`, `wt_aa`, `pdb_aa`, `match`, `has_structure`, then display a markdown
-summary (chain, offset, counts of matched / mismatched / unmapped positions) stacked
-with the first 12 rows of mismatched-with-structure positions.
+Add markdown explaining that we validate numbering before coloring structure.
 ```
 
+**Finished notebook:** `build_position_effect_tables` → `structure_mapping_markdown` → `pdb_sequence_validation_and_effect_maps`.
+
 ---
 
-## 10. JSON-encoded residue effect maps
+### Prompt 9 — Anywidget + 3Dmol viewer
 
-**Why**: Serializes per-residue effect maps for the anywidget traitlets.
+```
+Implement an inline anywidget backed by 3Dmol.js that loads 7OG3 PDB text, colors protein by residue-level effect maps passed as JSON from Python, toggles color mode conversion vs chirality, and supports mutational effect summary mean vs max with distinct maps. Use cartoon plus molecular surface with synchronized coloring; show non-water HETATM as ball-and-stick for ligand/cofactor. Put dropdown/UI controls in cells that marimo will reliably render (don’t hide the controls inside a stack with the widget only). Split marimo cells if needed so dropdown reactivity works.
 
-**Prompt**:
-
-```text
-Build a per-residue effect map (keyed by `str(pdb_residue)`) from each of the four
-position-effect tables, dropping null rows and computing
-`pdb_residue = int(row["position"]) + pdb_residue_offset`. JSON-encode them as
-`effects_conversion_mean_json`, `effects_conversion_max_json`,
-`effects_chirality_mean_json`, and `effects_chirality_max_json`, plus aliases
-`effects_conversion_json` (= mean conversion) and `effects_chirality_json` (= mean
-chirality) for back-compat with the spot-check cell later.
+Add markdown describing the widget and controls for a literate notebook.
 ```
 
+**Finished notebook:** `widget_engineering_markdown` → `define_protein_structure_viewer_widget` → `structure_viewer_markdown` → `protein_structure_coloring_controls` → `structure_viewer_color_legend` → `protein_structure_viewer_init` → `protein_structure_viewer_show` → `structure_viewer_interpretation_note`.
+
 ---
 
-## 11. Protein structure viewer
+### Prompt 10 — Click tooltip and polish
 
-**Why**: Get the PDB on screen as an anywidget so we have something to iterate on.
-Keep this prompt deliberately high-level — the agent will pick a sensible default
-representation (cartoon, ligand as ball-and-stick) and we'll layer interactivity on
-in the next two prompts.
+```
+Add click (not hover) tooltips on residues: chain, residue number, WT amino-acid letter, current color mode, mean/max summary, and the numeric value used for coloring. Clicking whitespace should dismiss the tooltip reliably (handle atom-click vs background-click ordering). Wire ribbon and surface to the same color scale.
 
-**Prompt**:
-
-```text
-I want you to create a protein structure viewer in my notebook to visualize the
-PDB file at `data/ired-novartis/7OG3.pdb`. Build it as an anywidget so we can
-layer interactivity onto it later.
+Restore coloring if widget traits and JSON maps drift after refactors.
 ```
 
+**Finished notebook:** re-run `define_protein_structure_viewer_widget` through `protein_structure_viewer_show` after changes.
+
 ---
 
-## 12. Color the surface by mutational effect
+### Prompt 11 — Literate narrative
 
-**Why**: Now that the structure is on screen, drive its coloring from the
-per-position effect maps and let the audience switch metric + summary live. The
-agent will naturally add the two dropdowns, a small legend, and the plumbing that
-pushes dropdown values into the widget — they fall out of the request.
-
-**Prompt**:
-
-```text
-Now color the protein surface by mutational effect at each position. I want two
-dropdowns — one to switch between `conversion` and `chirality`, and one to switch
-between `mean` and `max` summary — and the surface should recolor accordingly.
-The per-residue values come from `effects_conversion_mean_json`,
-`effects_conversion_max_json`, `effects_chirality_mean_json`, and
-`effects_chirality_max_json` (JSON strings, residue number → float, already in
-scope). Residues with no measurement should stay neutral gray. Add a small legend
-next to the dropdowns that reflects the current selection and shows the active
-map's min and max.
+```
+Improve the notebook markdown: intro goal, why two tables are separate, correlation section intent, single-point heatmap interpretation, positional averaging, sequence-to-structure validation, viewer controls (mode + mean/max, colormaps), and a short section before the spot-check table explaining we validate numbers against Polars aggregates.
 ```
 
----
-
-## 13. Click a residue to see its values
-
-**Why**: Inspect raw mutational effect at any residue, surfacing both mean and max
-so the audience can compare average vs best-case behavior at the same site.
-
-**Prompt**:
-
-```text
-Let me click on a residue in the structure and see the mutational effect at that
-position — both the mean and the max — alongside its chain, residue number, and
-wild-type amino acid. Clicking the empty background should dismiss the tooltip.
-```
-
-At this point you can demo the interactions live:
-
-- Toggle **Color mode**: `conversion` → `chirality`.
-- Toggle **Mutational effect summary**: `mean` → `max`.
-- Click a residue to read the tooltip; click whitespace to dismiss it.
+**Finished notebook:** run `viewer_validation_markdown` before the spot check.
 
 ---
 
-## Talk Track (Narration Script)
+## Cell run order (finished notebook)
 
-Use this after each cell or group of cells executes successfully.
+1. `notebook_imports`
+2. `intro_markdown`
+3. `data_loading_markdown`
+4. `load_conversion_table`
+5. `chirality_loading_markdown`
+6. `load_chirality_table`
+7. `correlation_analysis_markdown`
+8. `prepare_intersection_dataset`
+9. `plotly_intersection_scatter`
+10. `scatter_interpretation_note`
+11. `plotly_value_ecdfs`
+12. `single_point_heatmap_markdown`
+13. `plot_single_point_heatmap`
+14. `single_point_heatmap_interpretation_note`
+15. `average_effect_by_position_markdown`
+16. `plot_average_effect_by_position`
+17. `build_position_effect_tables`
+18. `structure_mapping_markdown`
+19. `pdb_sequence_validation_and_effect_maps`
+20. `widget_engineering_markdown`
+21. `define_protein_structure_viewer_widget`
+22. `structure_viewer_markdown`
+23. `protein_structure_coloring_controls`
+24. `structure_viewer_color_legend`
+25. `protein_structure_viewer_init`
+26. `protein_structure_viewer_show`
+27. `structure_viewer_interpretation_note`
+28. `viewer_validation_markdown`
+29. `structure_viewer_spot_check_verify`
 
-### 0:00–2:00 — Framing
-- "We are going from mutational assay tables to structure-aware interpretation in one notebook."
-- "This uses conversion and chiral selectivity as two optimization objectives."
+---
 
-### 2:00–5:00 — Data Ingestion
-- After prompts 1–2 land.
-- "We load two complementary assay tables: conversion and enantiomeric excess."
-- "The downstream flow keeps these separate so we can compare objectives cleanly."
+## Live UI checklist (audience)
 
-### 5:00–8:00 — Correlation Check
-- After prompts 3–5 land.
-- "At mutant intersection, conversion and chirality are not strongly correlated."
-- "That means optimizing one objective may not automatically optimize the other."
+- [ ] Toggle **conversion** ↔ **chirality** and point at the legend.
+- [ ] Toggle **mean** ↔ **max** and explain the difference in one sentence.
+- [ ] Click two or three residues and read tooltip fields (including WT AA).
+- [ ] Click empty background; tooltip should dismiss.
+- [ ] Point out ligand/cofactor ball-and-stick vs colored protein.
 
-### 8:00–12:00 — Sequence-Level Mutational Landscapes
-- After prompts 6–7 land.
-- "The heatmap highlights positional hotspots and identifies where mutation matters most."
-- "Hotspots indicate exploitable sequence regions for directed engineering."
+---
 
-### 12:00–15:00 — Structure Mapping
-- After prompts 8–10 land.
-- "We map assay positions to PDB residues and validate wild-type consistency."
-- "Then we project per-position summaries into structure-space."
+## Recovery
 
-### 15:00–19:00 — Interactive Structure Analysis
-- After prompts 11–13 land. The three prompts deliberately mirror how the widget
-  was originally built — a great moment to highlight agentic iteration: structure
-  on screen → color it by mutational effect → click to inspect.
-- Demo interactions live (see end of prompt 13).
-- "Now we can compare objective-specific structural patterns interactively."
-- "The same scaffold supports both average and best-case mutational perspectives."
+| Symptom | Try |
+|--------|-----|
+| Stale or blank 3D view | Re-run `define_protein_structure_viewer_widget`, `protein_structure_viewer_init`, `protein_structure_viewer_show`. |
+| Controls not updating coloring | Re-run `protein_structure_coloring_controls`, `structure_viewer_color_legend`, `protein_structure_viewer_show`. |
+| Gray or wrong colors | Re-run `pdb_sequence_validation_and_effect_maps` then viewer cells so JSON maps and widget traits match. |
+| Nuclear | Restart kernel; execute the **Cell run order** list from the top. |
 
-### 19:00–20:00 — Close
-- Wrap up verbally; no final prompt to run.
-- "We went from two assay tables to a structure-aware, interactive view in
-  thirteen prompts."
-- "Every visualization is faithful to the same underlying mutational tables."
+---
 
-## Audience-Facing Key Messages
+## Three-line close (optional)
 
-- Conversion and chirality can decouple; multi-objective thinking is required.
-- Sequence-space hotspots become actionable when mapped into structure context.
-- Interactive visualization helps prioritize mutation campaigns by site and objective.
-
-## Live Demo Interaction Checklist
-
-- Change color mode and mention legend updates.
-- Change mean/max and explain why max can surface opportunistic pockets.
-- Click at least 2–3 residues and read the tooltip aloud.
-- Click background once to show tooltip dismissal behavior.
-- Briefly point out ligand/cofactor displayed as ball-and-stick.
-
-## Backup / Recovery Notes
-
-- **Cell name drift / `NameError`**: the most likely cause is that an earlier cell
-  did not produce the expected variable name. Re-issue the earlier prompt and
-  explicitly call out the missing variable name from this doc.
-- **Stale or broken widget**: re-issue prompt 11, then prompts 12 and 13 in order
-  to layer back the coloring and tooltip.
-- **Controls not propagating**: re-issue prompt 12 — the dropdowns, legend, and
-  viewer plumbing are produced together.
-- **Total reset**: restart the marimo kernel and re-run the prompts in order from 1.
-- **Reference**: the original `hackathon-demo.py` (or the `.reference.py` copy from
-  pre-demo setup) is the source of truth for any cell whose output you want to
-  diff against the live recreation.
+- Conversion and chirality can decouple — treat them as separate objectives.
+- Hotspots in sequence matter when mapped onto structure.
+- Interactive mode + mean/max + residue drill-down helps prioritize the next mutations.
