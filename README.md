@@ -104,13 +104,10 @@ Deliverable: one polished notebook that demonstrates a meaningful data science w
 Use this menu as inspiration. Each category has two candidate datasets.
 Participants are also welcome to use their own dataset.
 
-### Protein Engineering
+### Biology
 
 - [FLIP2: Expanding Protein Fitness Landscape Benchmarks](https://flip.protein.properties/)
 - [ProteinGym](https://proteingym.org/)
-
-### Genomics
-
 - [1000 Genomes Project](https://www.internationalgenome.org/data)
 - [GTEx Datasets](https://gtexportal.org/home/datasets)
 
@@ -124,15 +121,17 @@ Participants are also welcome to use their own dataset.
 - [LeRobot Datasets (Hugging Face)](https://huggingface.co/lerobot)
 - [UCI Wall-Following Robot Navigation](https://archive.ics.uci.edu/dataset/86/wall+following+robot+navigation+data)
 
-### Marketing
+### Business
 
 - [UCI Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing)
 - [Kaggle Marketing Campaign Datasets](https://www.kaggle.com/search?q=marketing+campaign+dataset)
-
-### Retail
-
 - [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail)
 - [Retailrocket E-commerce Dataset (Kaggle)](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset)
+
+### Astronomy
+
+- [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/)
+- [Sloan Digital Sky Survey Data Releases](https://www.sdss.org/dr18/)
 
 ### Civic/Government
 
