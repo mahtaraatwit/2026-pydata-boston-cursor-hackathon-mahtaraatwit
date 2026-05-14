@@ -1,0 +1,154 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.23.6",
+    "script_metadata_hash": "c0a98991751906985dc65cbbdee2a6e4"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "f34b68d02f7249bae91e7b480f51029b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "3672a9f535ea8f9ee141dd9fcf687d13",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"bluebikes-after-dark-and-the-lit-street-grid\">Bluebikes after dark and the lit street grid</h1>\n<span class=\"paragraph\"><strong>Lens:</strong> compare <em>night</em> trip ends (9pm\u20136am) to <em>day</em> ends using distance to the <strong>nearest streetlight</strong> among ~74k city fixtures.</span>\n<span class=\"paragraph\"><strong>Data:</strong> Bluebikes Feb\u2013Apr 2026 trip files, Boston streetlight locations, hospital locations (coordinate sanity check), and the BTD traffic <em>study catalog</em> CSV.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "5382568ea8a2494b560674fa4a82172c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "d66e4a8c45a512f156cd31190a0b437a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "f783e33bff74793907bf9bab8b51f1b7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "79597c60a11a53f4413b08b879ef3150",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "f8fea5ce4bca3bc886409e7c67e1e319",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "ed886e7457f49ca1b23a845505553102",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "72b2a29535d55150d9c3365967685875",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "6ffab97fb0b82739e6b6552f2b05ba3b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "2eba7aad0ee8e3f8e163be06b4d778e0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"hospital-coordinates-sanity-check\">Hospital coordinates (sanity check)</h3>\n<span class=\"paragraph\">Parsed WGS84 from <code>Location</code> vs <code>lat \u2248 YCOORD/1e6</code>, <code>lon \u2248 -XCOORD/1e6</code> (sample rows and aggregate error in meters).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "94b7114711f48dbd4533db41f78cc784",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "73063c0a96bbbfbb35510a5c7455b1da",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"traffic-file-study-catalog-not-volumes\">Traffic file = study catalog (not volumes)</h3>\n<span class=\"paragraph\">Rows describe archived <strong>traffic studies</strong> (dates, neighborhood, study type). There are <strong>no hourly vehicle counts</strong> in this CSV \u2014 only where studies were logged.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "f620fba197316cc49435924a573f4e0c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "18b868588cb31eb6f4f322a490d35e82",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "a6ac8ffdda8fbfe1dd9e4a1fec6fce51",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"data-caveats\">Data caveats</h3>\n<ul>\n<li><strong>Traffic CSV:</strong> metadata about <em>traffic study artifacts</em> \u2014 not congestion or AADT.</li>\n<li><strong>Streetlights:</strong> static fixture locations; lamp type, outages, and canopy are not modeled.</li>\n<li><strong>Night definition:</strong> fixed clock hours (9pm\u20136am local) \u2014 no sunset variation.</li>\n<li><strong>Hospitals:</strong> use parsed lat/lon from <code>Location</code> for mapping; <code>XCOORD</code>/<code>YCOORD</code> scaling is approximate (see table above).</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
